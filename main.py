@@ -16,11 +16,11 @@ def load_data(filename="addressbook.pkl"):
 
 class UserInput:
     def __init__(self):
-        self.text = input("Enter a command: ")
+        self.user_input = input("Enter a command: ")
 
 class ParseInput(UserInput):
-    def __init__(self, text):
-        self.text = text
+    def __init__(self, entered_text):
+        self.entered_text = entered_text
 
     def parse_input(self, text):
         self.text = text
@@ -88,8 +88,9 @@ def all(book):
 
 @input_error
 def add_birthday(args, book):
-    name, birthday, *_ = args
-    print(args)
+    # name, birthday, *_ = args
+    name, birthday = args
+    # print(args)
     record = book.find(name)
     if record:
         if record.birthday:
@@ -170,7 +171,7 @@ class CommandAll(Command):
         print(all(self.book))
 
 class CommandAddBirthday(Command):
-    def __init__(self, book, args) -> None:
+    def __init__(self, args, book) -> None:
         self.args = args
         self.book = book
 
@@ -178,7 +179,7 @@ class CommandAddBirthday(Command):
         print(add_birthday(self.args, self.book))
 
 class CommandShowBirthday(Command):
-    def __init__(self, book, args) -> None:
+    def __init__(self, args, book) -> None:
         self.args = args
         self.book = book
 
@@ -245,9 +246,11 @@ def main():
     book = load_data(filename="addressbook.pkl")
     print("Welcome to the assistant bot!")
     while True:
-        user_input = UserInput()
-        parse = ParseInput(user_input)
-        command, *args = parse.parse_input(user_input.text)
+        new_input = UserInput()
+        # parse = ParseInput(user_input)
+        parse = ParseInput(new_input.user_input)
+        # command, *args = parse.parse_input(user_input.text)
+        command, *args = parse.parse_input(parse.entered_text)
 
         invoker = Invoker()
 
@@ -256,6 +259,8 @@ def main():
             break
         elif command == "hello":
             invoker.set_hello(ComandHello())
+            # tha same as:
+            # ComandHello().execute()
         elif command == "add":
             invoker.set_add_contact(CommandAddContact(args, book))
         elif command == "change":
